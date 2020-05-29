@@ -6,7 +6,7 @@
 >
 > Windows10 家庭中文版
 >
-> python 3.8.2
+> VScode 1.45.1
 >
 > opencv-python 4.2.0.34
 
@@ -22,22 +22,13 @@
 
 #### 1.1.2 实验实现
 
-​		具体实现很简单，首先利用OpenCV读入图像的灰度矩阵，之后对矩阵中每个点的灰度值，根据给定的线性函数求得变换后的灰度值即可，核心代码如下：
-
-```python
-def linear_trans(pic,k,b): # 对pic图片做线性变换
-    (n,m) = pic.shape
-    pic1 = [[round(k*pic[i][j]+b) for j in range(m)]for i in range(n)] # 进行线性变换得到新的灰度图
-    return pic1
-```
-
-​		完整的源代码在 lab1_1.py 中
+​		具体实现很简单，首先读入图像的灰度矩阵，之后对矩阵中每个点的灰度值，根据给定的线性函数求得变换后的灰度值即可，核心代码如下：
 
 #### 1.1.3 实验结果
 
-当斜率k=0.05,截距b=120时，灰度的范围受到了压缩，可以看出右图中的灰度分辨率也明显下降了
+当斜率k=0.5,截距b=64时，灰度的范围受到了压缩，可以看出变换后的右图的灰度分辨率也明显下降了
 
-<img src="E:\STUDY\Computer Graphics\lab2\1.jpg" alt="1" style="zoom:67%;" />
+![5](\result\5.jpg)
 
 ### 1.2 灰度拉伸
 
@@ -47,29 +38,11 @@ def linear_trans(pic,k,b): # 对pic图片做线性变换
 
 #### 1.2.2 实验实现
 
-​		实现类似于线性变换，只要将变换函数变为分段线性函数即可：
-
-```python
-def stretch_trans(pic,x1,y1,x2,y2): # 对pic图片做线性变换
-    (n,m) = pic.shape
-    pic1 = [[0 for j in range(m)]for i in range(n)] # 初始化新的灰度图
-    for i in range(n):
-        for j in range(m):
-            t = pic[i][j]
-            if (t < x1):
-                pic1[i][j] = y1 / x1 * t
-            elif (t > x2):
-                pic1[i][j] = (y2 - y1) / (x2 - x1) * (t - x1) + y1
-            else:
-                pic1[i][j] = (255 - y2) / (255 - y2) * (t - x2) + y2
-    return pic1
-```
-
-​		完整的源代码在 lab1_2.py 中
+​		实现类似于线性变换，只要将变换函数变为分段线性函数即可。本次实验中参数设为x1=50,y1=50,x2=200,y2=150
 
 #### 1.2.3 实验结果
 
-<img src="E:\STUDY\Computer Graphics\lab2\2.jpg" alt="2" style="zoom:67%;" />
+![6](result\6.jpg)
 
 ### 1.3 灰度直方图与直方图均衡
 
@@ -83,13 +56,15 @@ def stretch_trans(pic,x1,y1,x2,y2): # 对pic图片做线性变换
 
 ​		直方图均衡化则对每个点的灰度，计算比其灰度更小的点的所占比例a，再用a去乘以最大灰度值即可得到均衡化后的该点的灰度值。
 
-​		完整的源代码在 lab1_3.py 中
+​		
 
 #### 1.3.3 实验结果
 
-下图中左侧的是原图及其直方图，直方图显示的灰度范围在50-200之间；右侧显示的是直方图均衡化后的图片及均衡后的灰度直方图。
+下图中上面的是原图及其直方图，直方图显示的灰度范围在0-255之间横坐标是灰度值，纵坐标是出现频率，出现次数最多的灰度对应的像素高度为256，未出现的高度为0，其他则根据比例确定高度；下方显示的是直方图均衡化后的图片。
 
-<img src="E:\STUDY\Computer Graphics\lab2\3.jpg" alt="3" style="zoom:67%;" />
+![3](result\3.jpg)
+
+<img src="result\4.jpg" style="zoom:67%;" />
 
 ## 2.数字图像的平滑
 
@@ -103,7 +78,9 @@ def stretch_trans(pic,x1,y1,x2,y2): # 对pic图片做线性变换
 
 ### 2.2实验结果
 
-![4](E:\STUDY\Computer Graphics\lab2\4.jpg)
+![1.jpg](\result\1.jpg)
+
+![2](result\2.jpg)
 
 上图中左上方的图片为原图，右上方的图片为增加了椒盐噪声后的图片。
 
@@ -203,11 +180,19 @@ $$
 
 对blood1.bmp的检测结果：
 
-![5](E:\STUDY\Computer Graphics\lab2\5.jpg)
+原图：
 
-对map.bmp的检测结果：
+<img src="\result\7.jpg" style="zoom:67%;" />
 
-![6](E:\STUDY\Computer Graphics\lab2\6.jpg)
+使用各种算子的结果：
+
+* Roberts、Sobel、Prewitt算子的结果：
+
+![](result\8.jpg)
+
+* Laplace算子两种形式的结果：
+
+![9](result\9.jpg)
 
 ## 4.数字图像的Fourier变换
 
@@ -219,32 +204,50 @@ $$
 
 ### 4.2 实验实现
 
-本次实验实现的是递归版的FFT，对图像作变换时，对行和列分别作FFT。对于频谱的幅度，使用$f(x)=log(x)+1$ 进行了变换。
+本次实验实现的是非递归版的FFT，对图像作变换时，对行和列分别作FFT。对于频谱的幅度，由于最大值和普遍情况差距极大，直接按比例转换到0-255的灰度区间中显示效果不佳，所以使用$f(x)=log(x)+1$ 进行了变换。
+
+将低频移到中心点只要把图像划分成四个区域，左上和右下，右上和左下分别交换即可。
+
+逆变换则是对幅度谱和相位谱分别进行的
 
 ### 4.3实验结果
 
 对Rect1.bmp的变换结果如下图所示：
 
-右上方位频谱的幅度变换后的结果，左下方为对频谱的幅值作逆变换的结果，右下方为对频谱的相位作逆变换的结果。
+左侧为原图，右侧为使用FFT变换后在通过逆变换直接还原的图片：
 
-![7](E:\STUDY\Computer Graphics\lab2\7.jpg)
+![](E:\STUDY\Computer Graphics\Digital-image-processing\result\10.jpg)
+
+可以看到能够成功还原。
+
+下图中左侧为频谱的幅值，右侧为相位（以相位的实部即$cos \theta$作为灰度值）。
+
+![](result\11.jpg)
+
+下图中左侧为对频谱的幅值作逆变换的结果，右侧为对频谱的相位作逆变换的结果。
+
+![](result\12.jpg)
 
 对Rect2.bmp的变换结果：
 
-![8](E:\STUDY\Computer Graphics\lab2\8.jpg)
+原图与直接FFT逆变换还原的结果：
 
+![](result\13.jpg)
 
+幅值与相位谱:
 
+![](result\14.jpg)
 
+对幅值谱和相位谱的逆变换：
+
+![](result\15.jpg)
+
+可以看出人眼对相频特性的敏感程度要更高一些，相位谱能还原出图像的大致轮廓，幅值谱则不行。
 
 ## 备注
 
-实验的代码在python环境下运行，需要安装OpenCV、matplotlib、numpy包，可以在命令行中执行pip install命令安装。
+实验的代码在c++环境下运行，使用了stb_image库来进行图像的输入输出，不需要额外配置环境，只要让三个头文件与源代码在同一目录下即可，其详细介绍可以参见GitHub仓库https://github.com/nothings/stb。
 
-在对应的环境中，代码可以通过如下命令执行：
+文件结构是每个实验一个文件夹，下面有源代码和子目录output用来存放输出的结果。
 
-```
-python lab*.py path/name.bmp
-```
-
-lab*.py是要执行的代码，path/name.bmp是要读取的图片的路径。
+输入输出的路径在每个实验代码的开头的path变量中。
